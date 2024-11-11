@@ -39,7 +39,8 @@ pipeline {
                     sshagent(['UAT_SSH_KEY']) {
                         sh """
                             ssh -o StrictHostKeyChecking=no ubuntu@${ec2Ip} '
-                                
+                                docker stop cont1 
+                                docker rm cont1
                                 docker run -d --name cont1 -p 1010:5000 ${DOCKER_IMAGE}
                             '
                         """
@@ -51,7 +52,7 @@ pipeline {
             steps {
                 script {
                     def ec2IP = (ENVIRONMENT == 'UAT') ? "${env.UAT_EC2_IP}" : "${env.PROD_EC2_IP}"
-                    def healthCheckUrl = "http://${ec2IP}/api/hello"
+                    def healthCheckUrl = "http://${ec2IP}:1010/api/hello"
                     
                     sh """
                         if curl -f ${healthCheckUrl}; then
