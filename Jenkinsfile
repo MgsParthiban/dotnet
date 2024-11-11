@@ -46,6 +46,22 @@ pipeline {
                     }
                 }
             }
-        }       
+        }
+        stage('Verify Health Check') {
+            steps {
+                script {
+                    def ec2IP = (ENVIRONMENT == 'UAT') ? "${env.UAT_EC2_IP}" : "${env.PROD_EC2_IP}"
+                    def healthCheckUrl = "http://${ec2IP}/health"
+                    
+                    sh """
+                        if curl -f ${healthCheckUrl}; then
+                            echo "Health check passed. Application is running successfully."
+                        else
+                            echo "Health check failed. Application may not be running correctly."
+                            exit 1
+                        fi
+                    """
+                }
+            }
     }
 }
