@@ -51,7 +51,7 @@ pipeline {
             steps {
                 script {
                     def ec2IP = (ENVIRONMENT == 'UAT') ? "${env.UAT_EC2_IP}" : "${env.PROD_EC2_IP}"
-                    def healthCheckUrl = "http://${ec2IP}/health"
+                    def healthCheckUrl = "http://${ec2IP}/api/hello"
                     
                     sh """
                         if curl -f ${healthCheckUrl}; then
